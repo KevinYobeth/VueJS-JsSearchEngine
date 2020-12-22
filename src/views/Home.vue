@@ -1,18 +1,31 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1 class="text-4xl font-bold mb-3">Random Code</h1>
+    <div v-for="snippet in snippets" :key="snippet.id">
+      <Snippet :id="snippet.id" :title="snippet.title" />
+    </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Snippet from "@/components/Snippet.vue";
 
 export default {
-  name: 'Home',
+  name: "Home",
+  data() {
+    return {
+      snippets: [],
+    };
+  },
   components: {
-    HelloWorld
-  }
-}
+    Snippet,
+  },
+  mounted() {
+    fetch("https://js-searchengine.herokuapp.com/")
+      .then((res) => res.json())
+      .then((snippets) => (this.snippets = snippets))
+      .catch((err) => console.log(err.message));
+  },
+};
 </script>
