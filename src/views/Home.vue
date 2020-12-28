@@ -15,7 +15,15 @@
       </div>
     </div>
     <div v-else>
-      <p>Loading Random Snippets</p>
+      <p v-if="message">{{ message }}</p>
+      <button
+        @click="refresh"
+        v-if="message === 'Result not found'"
+        type="button"
+        class="bg-gray-800 hover:bg-gray-600 text-white ml-3 p-2 mt-3 px-5 rounded-md"
+      >
+        Refresh
+      </button>
     </div>
   </div>
 </template>
@@ -35,14 +43,27 @@ export default {
     return {
       snippets: [],
       currentSnippets: "Random",
+      message: "",
     };
   },
   methods: {
     queryFound(query) {
-      console.log(query["data"]);
       this.snippets = query["data"];
 
       this.currentSnippets = "Query";
+
+      if (this.snippets.length == 0) {
+        this.message = "Result not found";
+      }
+    },
+    refresh() {
+      fetch("https://js-searchengine.herokuapp.com/")
+        .then((res) => res.json())
+        .then((snippets) => (this.snippets = snippets))
+        .catch((err) => console.log(err.message));
+
+      this.currentSnippets = "Random";
+      this.message = "Loading snippets";
     },
   },
   mounted() {
@@ -52,6 +73,7 @@ export default {
       .catch((err) => console.log(err.message));
 
     this.currentSnippets = "Random";
+    this.message = "Loading snippets";
   },
 };
 </script>
